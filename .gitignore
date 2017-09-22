@@ -27,6 +27,7 @@
 **/*.dirstamp
 **/*.idea
 **/*.cfg
+**/*.pc
 aclocal*
 ar-lib*
 autom4te*
@@ -38,3 +39,5 @@ depcomp*
 install-sh
 missing
 stamp-h1
+src/version.h
+

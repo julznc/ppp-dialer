@@ -1,5 +1,5 @@
 
-AC_INIT(ppp-dialer, 1.0, yus.projectproto@gmail.com)
+AC_INIT(ppp-dialer, 2.0, yus.projectproto@gmail.com)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_HEADERS([config.h])
@@ -12,6 +12,8 @@ AM_PROG_AR
 
 AC_CONFIG_FILES([
   Makefile
+  src/Makefile
+  src/version.h
 ])
 
 AC_OUTPUT
