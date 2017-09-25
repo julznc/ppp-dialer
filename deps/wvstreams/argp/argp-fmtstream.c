@@ -32,7 +32,6 @@
 #include <ctype.h>
 
 #include "argp-fmtstream.h"
-#include "argp-namefrob.h"
 
 #ifndef ARGP_FMTSTREAM_USE_LINEWRAP
 
@@ -345,7 +344,7 @@ __argp_fmtstream_ensure (struct argp_fmtstream *fs, size_t amount)
 
 	  if (! new_buf)
 	    {
-	      __set_errno (ENOMEM);
+          errno = ENOMEM;
 	      return 0;
 	    }
 
@@ -374,7 +373,7 @@ __argp_fmtstream_printf (struct argp_fmtstream *fs, const char *fmt, ...)
 
       va_start (args, fmt);
       avail = fs->end - fs->p;
-      out = __vsnprintf (fs->p, avail, fmt, args);
+      out = vsnprintf (fs->p, avail, fmt, args);
       va_end (args);
       if (out >= avail)
 	size_guess = out + 1;

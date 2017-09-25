@@ -68,8 +68,6 @@ char *alloca ();
 
 #include "argp.h"
 #include "argp-fmtstream.h"
-#include "argp-namefrob.h"
-
 
 #ifndef _LIBC
 # ifndef __strchrnul
@@ -790,7 +788,7 @@ hol_entry_cmp (const struct hol_entry *entry1,
 	return doc1 - doc2;
       else if (!short1 && !short2 && long1 && long2)
 	/* Only long options.  */
-	return __strcasecmp (long1, long2);
+    return strcasecmp (long1, long2);
       else
 	/* Compare short/short, long/short, short/long, using the first
 	   character of long options.  Entries without *any* valid
