@@ -47,11 +47,6 @@ char *alloca ();
 #include <assert.h>
 #include <stdarg.h>
 #include <ctype.h>
-/* Does any system still need malloc.h? If so, we'd need a configure
-   test. */
-#ifdef _WIN32
-#include <malloc.h>
-#endif
 
 #ifndef _
 /* This is for other GNU distributions with internationalized messages.  */
@@ -1710,7 +1705,7 @@ __argp_short_program_name(const struct argp_state *state)
      but currently the value is passed on directly to fputs_unlocked,
      so that requires more changes. */
 # if __GNUC__
-#  warning No reasonable value to return
+//#  warning No reasonable value to return
   return "";
 # endif /* __GNUC__ */
 #endif /* !HAVE_DECL_PROGRAM_INVOCATION_NAME */

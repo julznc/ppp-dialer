@@ -10,12 +10,6 @@
 #include "wvfdstream.h"
 #include <fcntl.h>
 
-#ifdef _WIN32
-#define O_NONBLOCK 0
-#define O_LARGEFILE 0
-#define fcntl(a,b,c)
-#endif
-
 /**
  * WvFile implements a stream connected to a file or Unix device.  We
  * include no support for operations like seek().  Since files are not

@@ -15,9 +15,7 @@
 #include "wvstring.h"
 #include "wvstringlist.h"
 #include "wvhex.h"
-#ifndef _WIN32
 #include "wvregex.h"
-#endif
 
 /** \file
  * Various little string functions
@@ -83,7 +81,7 @@ void replace_char(void *string, char c1, char c2, int length);
  */
 char *snip_string(char *haystack, char *needle);
 
-#ifndef _WIN32
+
 /**
  * In-place modify a character string so that all contained letters are 
  * in lower case. Returns 'string'.
@@ -96,7 +94,6 @@ char *strlwr(char *string);
  */
 char *strupr(char *string);
 
-#endif
 
 /** Returns true if all characters in 'string' are isalnum() (alphanumeric). */
 bool is_word(const char *string);
@@ -167,7 +164,6 @@ WvString intl_datetime(time_t _when = -1);
 
 time_t intl_gmtoff(time_t t);
 
-#ifndef _WIN32
 /**
  * Similar to crypt(), but this randomly selects its own salt.
  * This function is defined in strcrypt.cc.  It chooses to use the DES
@@ -175,7 +171,6 @@ time_t intl_gmtoff(time_t t);
  */
 WvString passwd_crypt(const char *str);
 
-#endif
 /**
  * Similar to crypt(), but this randomly selects its own salt.
  * This function is defined in strcrypt.cc.  It chooses to use the MD5
@@ -369,7 +364,6 @@ void strcoll_splitstrict(StringCollection &coll, WvStringParm _s,
 }
 
 
-#ifndef _WIN32 // don't have regex on win32
 /**
  * Splits a string and adds each substring to a collection.
  *   coll       : the collection of strings to add to
@@ -406,7 +400,6 @@ void strcoll_split(StringCollection &coll, WvStringParm s,
     	coll.add(last, true);
     }
 }
-#endif
 
 
 /**

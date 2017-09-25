@@ -9,11 +9,7 @@
 #ifndef __WVFORK_H
 #define __WVFORK_H
 
-#ifndef _WIN32
 #include <unistd.h>
-#else
-typedef int pid_t;
-#endif
 
 #include "wvscatterhash.h"
 #include "wvtr1.h"

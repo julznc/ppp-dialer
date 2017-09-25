@@ -12,7 +12,6 @@ WvFile::WvFile()
     readable = writable = false;
 }
 
-#ifndef _WIN32 // meaningless to do this on win32
 /*
  * The Win32 runtime library doesn't provide fcntl so we can't
  * set readable and writable reliably. Use the other constructor.
@@ -31,14 +30,10 @@ WvFile::WvFile(int rwfd) : WvFDStream(rwfd)
     else
 	readable = writable = false;
 }
-#endif
 
 
 WvFile::WvFile(WvStringParm filename, int mode, int create_mode)
 {
-#ifdef _WIN32
-    mode |= O_BINARY; // WvStreams users aren't expecting crlf mangling
-#endif
     open(filename, mode, create_mode);
 }
 
@@ -78,11 +73,7 @@ bool WvFile::open(WvStringParm filename, int mode, int create_mode)
 	undo_force_select(true, false, false);
     
     close();
-    #ifndef _WIN32
     int rwfd = ::open(filename, mode | O_NONBLOCK, create_mode);
-    #else
-    int rwfd = ::_open(filename, mode | O_NONBLOCK, create_mode);
-    #endif
     if (rwfd < 0)
     {
 	seterr(errno);
@@ -95,8 +86,6 @@ bool WvFile::open(WvStringParm filename, int mode, int create_mode)
     return true;
 }
 
-
-#ifndef _WIN32  // since win32 doesn't support fcntl
 bool WvFile::open(int _rwfd)
 {
     noerr();
@@ -121,7 +110,6 @@ bool WvFile::open(int _rwfd)
     closed = stop_read = stop_write = false;
     return true;
 }
-#endif 
 
 
 // files not open for read are never readable; files not open for write

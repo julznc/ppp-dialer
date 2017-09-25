@@ -56,7 +56,6 @@ bool UniIniGen::refresh()
 {
     WvFile file(filename, O_RDONLY);
 
-#ifndef _WIN32
     struct stat statbuf;
     if (file.isok() && fstat(file.getrfd(), &statbuf) == -1)
     {
@@ -82,7 +81,7 @@ bool UniIniGen::refresh()
 	return true;
     }
     memcpy(&old_st, &statbuf, sizeof(statbuf));
-#endif
+
 
     if (!file.isok())
     {
@@ -244,7 +243,6 @@ bool UniIniGen::refreshcomparator(const UniConfValueTree *a,
 }
 
 
-#ifndef _WIN32
 bool UniIniGen::commit_atomic(WvStringParm real_filename)
 {
     struct stat statbuf;
@@ -288,7 +286,6 @@ bool UniIniGen::commit_atomic(WvStringParm real_filename)
 
     return true;
 }
-#endif
 
 
 void UniIniGen::commit()
@@ -298,19 +295,6 @@ void UniIniGen::commit()
 
     UniTempGen::commit();
 
-#ifdef _WIN32
-    // Windows doesn't support all that fancy stuff, just open the
-    // file and be done with it
-    WvFile file(filename, O_WRONLY|O_TRUNC|O_CREAT, create_mode);
-    save(file, *root); // write the changes out to our file
-    file.close();
-    if (file.geterr())
-    {
-        log(WvLog::Warning, "Can't write '%s': %s\n",
-	    filename, file.errstr());
-	return;
-    }
-#else
     WvString real_filename(filename);
     char resolved_path[PATH_MAX];
 
@@ -344,7 +328,6 @@ void UniIniGen::commit()
 	    log(WvLog::Warning, "Error writing '%s' ('%s'): %s\n",
 		filename, real_filename, file.errstr());
     }
-#endif
 
     dirty = false;
 }

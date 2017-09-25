@@ -21,17 +21,7 @@
 #include "wvlinkerhack.h"
 #include "wvmoniker.h"
 
-#ifdef _WIN32
-#define ENOBUFS WSAENOBUFS
-#undef errno
-#define errno GetLastError()
-#ifdef __GNUC__
-#include <sys/socket.h>
-#endif
-#include "streams.h"
-#else
-#include <errno.h>
-#endif
+# include <errno.h>
 
 #include <map>
 
@@ -288,12 +278,6 @@ WvStream::WvStream():
     my_wsid = next_wsid_to_try++;
     bool inserted = wsid_map->insert(make_pair(my_wsid, this)).second;
     assert(inserted);
-    
-#ifdef _WIN32
-    WSAData wsaData;
-    int result = WSAStartup(MAKEWORD(2,0), &wsaData); 
-    assert(result == 0);
-#endif
 }
 
 
@@ -413,15 +397,7 @@ void WvStream::callback()
     
     assert(!uses_continue_select || personal_stack_size >= 1024);
 
-#define TEST_CONTINUES_HARSHLY 0
-#if TEST_CONTINUES_HARSHLY
-#ifndef _WIN32
-# warning "Using WvCont for *all* streams for testing!"
-#endif
-    if (1)
-#else
     if (uses_continue_select && personal_stack_size >= 1024)
-#endif
     {
 	if (!call_ctx) // no context exists yet!
 	{
@@ -943,12 +919,6 @@ int WvStream::_do_select(SelectInfo &si)
     tv.tv_sec = si.msec_timeout / 1000;
     tv.tv_usec = (si.msec_timeout % 1000) * 1000;
     
-#ifdef _WIN32
-    // selecting on an empty set of sockets doesn't cause a delay in win32.
-    SOCKET fakefd = socket(PF_INET, SOCK_STREAM, 0);
-    FD_SET(fakefd, &si.except);
-#endif    
-    
     // block
     int sel = ::select(si.max_fd+1, &si.read, &si.write, &si.except,
         si.msec_timeout >= 0 ? &tv : (timeval*)NULL);
@@ -966,9 +936,6 @@ int WvStream::_do_select(SelectInfo &si)
     {
         seterr(errno);
     }
-#ifdef _WIN32
-    ::close(fakefd);
-#endif
     TRACE("select() returned %d\n", sel);
     return sel;
 }

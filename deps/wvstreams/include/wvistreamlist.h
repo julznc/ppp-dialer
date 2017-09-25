@@ -63,9 +63,7 @@ private:
     bool in_select;
     bool dead_stream;
 
-#ifndef _WIN32
     static void onfork(pid_t p);
-#endif
 
 public:
     void append(IWvStream *s, bool auto_free, const char *id)

@@ -13,10 +13,6 @@
 
 #include <ctype.h>
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif
-
 WvLogRcvBaseList *WvLog::receivers;
 int WvLog::num_receivers = 0, WvLog::num_logs = 0;
 WvLogRcvBase *WvLog::default_receiver = NULL;
@@ -197,9 +193,7 @@ void WvLogRcvBase::static_init()
     static bool init = false;
     if (!init)
     {
-#ifndef _WIN32
         add_wvfork_callback(WvLogRcvBase::cleanup_on_fork);
-#endif
         init = true;
     }
 }

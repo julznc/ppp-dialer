@@ -13,9 +13,7 @@
 #include "wvassert.h"
 #include "wvstrutils.h"
 
-#ifndef _WIN32
 #include "wvfork.h"
-#endif
 
 #ifdef HAVE_VALGRIND_MEMCHECK_H
 #include <valgrind/memcheck.h>
@@ -47,9 +45,7 @@ WvIStreamList::WvIStreamList():
     if (this == &globallist)
     {
 	globalstream = this;
-#ifndef _WIN32
         add_wvfork_callback(WvIStreamList::onfork);
-#endif
         set_wsname("globallist");
         add_debugger_commands();
     }
@@ -268,7 +264,6 @@ void WvIStreamList::execute()
     TRACE("[DONE %p]\n", this);
 }
 
-#ifndef _WIN32
 void WvIStreamList::onfork(pid_t p)
 {
     if (p == 0)
@@ -277,7 +272,6 @@ void WvIStreamList::onfork(pid_t p)
         globallist.zap(false);
     }
 }
-#endif
 
 
 void WvIStreamList::add_debugger_commands()

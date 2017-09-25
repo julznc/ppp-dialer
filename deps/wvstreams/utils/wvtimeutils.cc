@@ -109,9 +109,5 @@ void wvstime_set(const WvTime &_new_time)
 
 void wvdelay(int msec_delay)
 {
-#ifdef _WIN32
-    Sleep(msec_delay);
-#else
     usleep(msec_delay * 1000);
-#endif
 }

@@ -13,21 +13,10 @@
 #include <time.h>
 #include <errno.h>
 
-#ifndef _WIN32
 //#include <uuid.h>
 #include <errno.h>
 #include <netdb.h>
 #include <unistd.h>
-#else
-#undef errno
-#define errno GetLastError()
-#define strcasecmp _stricmp
-#include <winsock2.h>
-#include <direct.h>
-#ifndef EACCES
-#define EACCES 0xfff
-#endif
-#endif
 
 char *terminate_string(char *string, char c)
 /**********************************************/
@@ -881,11 +870,7 @@ WvString hostname()
             deletev name;
             return hostname;
         }
-#ifdef _WIN32
-	assert(errno == WSAEFAULT);
-#else
         assert(errno == EINVAL);
-#endif
     }
 }
 

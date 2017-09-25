@@ -8,38 +8,12 @@
 #include "wvmoniker.h"
 #include <fcntl.h>
 
-#ifndef _WIN32
 #include <sys/socket.h>
 
 inline bool isselectable(int fd)
 {
     return true;
 }
-
-#else // _WIN32
-
-#define getsockopt(a,b,c,d,e) getsockopt(a,b,c,(char *)d, e) 
-#define SHUT_RD SD_RECEIVE
-#define SHUT_WR SD_SEND
-#define ENOBUFS WSAENOBUFS
-#undef EAGAIN
-#define EAGAIN WSAEWOULDBLOCK
-
-#include "streams.h"
-
-#undef errno
-#define errno GetLastError()
-
-// in win32, only sockets can be in the FD_SET for select()
-static inline bool isselectable(int s)
-{
-    // if _get_osfhandle() works, it's a msvcrt fd, not a winsock handle.
-    // msvcrt fds can't be select()ed on correctly.
-    return ((HANDLE)_get_osfhandle(s) == INVALID_HANDLE_VALUE) 
-	? true : false;
-}
-
-#endif // _WIN32
 
 
 /***** WvFdStream *****/
@@ -73,24 +47,16 @@ WvFdStream::~WvFdStream()
 
 static int _cloexec(int fd, bool close_on_exec)
 {
-#ifndef _WIN32 // there is no exec() in win32, so this is meaningless there
     return fcntl(fd, F_SETFD, close_on_exec ? FD_CLOEXEC : 0);
-#else
-    return 0;
-#endif
 }
 
 
 static int _nonblock(int fd, bool nonblock)
 {
-#ifndef _WIN32
+
     int flag = fcntl(fd, F_GETFL);
     return fcntl(fd, F_SETFL,
 		 (flag & ~O_NONBLOCK) | (nonblock ? O_NONBLOCK : 0));
-#else
-    u_long arg = nonblock ? 1 : 0;
-    return ioctlsocket(fd, FIONBIO, &arg);
-#endif    
 }
 
 
