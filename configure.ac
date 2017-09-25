@@ -14,9 +14,6 @@ AC_CONFIG_FILES([
   Makefile
   deps/wvstreams/Makefile
   deps/wvstreams/argp/Makefile
-  deps/wvstreams/utils/Makefile
-  deps/wvstreams/uniconf/Makefile
-  deps/wvstreams/streams/Makefile
   src/Makefile
   src/version.h
 ])
