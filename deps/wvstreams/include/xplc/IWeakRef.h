@@ -34,7 +34,6 @@
  */
 
 class IWeakRef: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Obtains an addRef()'d strong reference to the referenced

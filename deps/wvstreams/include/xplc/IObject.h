@@ -35,19 +35,6 @@
 
 #include <xplc/uuid.h>
 
-#ifndef UNSTABLE
-/**
- * Used to mark an interface as unstable.  Add an UNSTABLE_INTERFACE
- * declaration to your object if you don't want people to use your
- * interface without knowing the interface might change from
- * underneath them.  They will then have to \#define UNSTABLE if they
- * want their program to compile.
- */
-#define UNSTABLE_INTERFACE static bool UNSTABLE_INTERFACE = true;
-#else
-#define UNSTABLE_INTERFACE
-#endif
-
 class IWeakRef;
 
 /** \interface IObject IObject.h xplc/IObject.h
@@ -63,7 +50,6 @@ class IWeakRef;
  * \sa IMPLEMENT_IOBJECT, mutate(), get(), xplc_ptr, XPLC
  */
 class IObject {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Indicate you are using this object.  This increases the reference

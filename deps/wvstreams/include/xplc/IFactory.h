@@ -35,7 +35,6 @@
  */
 
 class IFactory: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Creates an object.

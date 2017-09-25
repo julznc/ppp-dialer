@@ -35,7 +35,6 @@
  */
 
 class IModuleLoader: public IObject {
-  UNSTABLE_INTERFACE
 public:
   virtual IModule* loadModule(const char* modulename) = 0;
 };

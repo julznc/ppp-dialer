@@ -36,10 +36,6 @@
 
 #include <xplc/IObject.h>
 
-#ifdef UNSTABLE
-#include <limits.h>
-#endif
-
 /**
  * XPLC module magic number. Used to ensure that we are dealing with a
  * valid XPLC module.
@@ -50,23 +46,14 @@
  * The current XPLC module ABI version.
  */
 //@{
-#ifdef UNSTABLE
-#define XPLC_MODULE_VERSION_MAJOR UINT_MAX
-#define XPLC_MODULE_VERSION_MINOR 0
-#else
 #define XPLC_MODULE_VERSION_MAJOR 0
 #define XPLC_MODULE_VERSION_MINOR 0
-#endif
 //@}
 
 /**
  * Defines attributes required for exported symbols.
  */
-#ifdef WIN32
-#define ENTRYPOINT extern "C" __declspec(dllexport)
-#else
 #define ENTRYPOINT extern "C"
-#endif
 
 /**
  * Entry for a component. Modules have an array of these, where the

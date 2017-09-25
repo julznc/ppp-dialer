@@ -38,7 +38,6 @@
  * XPLC_monikers UUID from the service manager.
  */
 class IMonikerService: public IMoniker {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Register an object to be retrieved with a moniker.

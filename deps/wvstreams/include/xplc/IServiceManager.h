@@ -56,7 +56,6 @@
  * the service manager.
  */
 class IServiceManager: public IServiceHandler {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Register a handler to be handled by this manager.

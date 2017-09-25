@@ -7,20 +7,9 @@
 #ifndef __WVXPLC_H
 #define __WVXPLC_H
 
-#ifndef UNSTABLE
-#define UNSTABLE
-#endif
-
-#ifdef _WIN32
-#include <time.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include "wvwin32-sanitize.h"
-#else
 #include <unistd.h> // not strictly necessary, but EVERYBODY uses this...
 #include <sys/time.h>
 #include "wvautoconf.h"
-#endif
 
 #ifndef ENABLE_DELETE_DETECTOR
 #include <xplc/IObject.h>

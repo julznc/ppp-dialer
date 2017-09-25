@@ -34,7 +34,6 @@
  */
 
 class ICategory: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /** Gets an iterator for the category. */
   virtual ICategoryIterator* getIterator() = 0;

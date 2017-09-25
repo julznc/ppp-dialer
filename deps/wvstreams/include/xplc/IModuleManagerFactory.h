@@ -29,7 +29,6 @@
 #include <xplc/IServiceHandler.h>
 
 class IModuleManagerFactory: public IObject {
-  UNSTABLE_INTERFACE
 public:
   virtual IServiceHandler* createModuleManager(const char* directory) = 0;
 };

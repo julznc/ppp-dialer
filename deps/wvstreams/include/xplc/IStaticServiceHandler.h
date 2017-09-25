@@ -34,7 +34,6 @@
  */
 
 class IStaticServiceHandler: public IServiceHandler {
-  UNSTABLE_INTERFACE
 public:
   /** Adds an object to the static service handler. */
   virtual void addObject(const UUID&, IObject*) = 0;

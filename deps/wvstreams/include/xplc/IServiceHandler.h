@@ -41,7 +41,6 @@
  * %XPLC, no matter where they are.
  */
 class IServiceHandler: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Get the object corresponding to the given UUID.  The returned object

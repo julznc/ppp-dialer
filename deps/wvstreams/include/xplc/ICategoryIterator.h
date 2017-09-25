@@ -34,7 +34,6 @@
  */
 
 class ICategoryIterator: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /** Returns the UUID of the category entry. */
   virtual const UUID& getUuid() = 0;

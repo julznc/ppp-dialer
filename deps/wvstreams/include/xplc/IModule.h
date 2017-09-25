@@ -35,7 +35,6 @@
  */
 
 class IModule: public IServiceHandler {
-  UNSTABLE_INTERFACE
 public:
   /*
    * FIXME: There will be other methods here, for inspecting a

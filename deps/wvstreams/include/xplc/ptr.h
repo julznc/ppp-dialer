@@ -44,10 +44,6 @@
 
 #include <xplc/IObject.h>
 
-#ifndef UNSTABLE
-#error "xplc_ptr is experimental!"
-#endif
-
 
 /**
  * Smart pointer class for XPLC interfaces.

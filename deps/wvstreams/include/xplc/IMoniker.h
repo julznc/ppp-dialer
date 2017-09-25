@@ -48,7 +48,6 @@
  * to the %XPLC moniker system.
  */
 class IMoniker: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Given a moniker string, return the IObject it refers to, or NULL if

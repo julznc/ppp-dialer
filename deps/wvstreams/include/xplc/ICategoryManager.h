@@ -35,7 +35,6 @@
  */
 
 class ICategoryManager: public IObject {
-  UNSTABLE_INTERFACE
 public:
   /**
    * Register a component with a category. Both are specified by

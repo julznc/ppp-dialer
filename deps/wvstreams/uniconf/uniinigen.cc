@@ -484,10 +484,6 @@ static void save_sect(WvStream &file, UniConfValueTree &toplevel,
 
 void UniIniGen::save(WvStream &file, UniConfValueTree &parent)
 {
-    // parent might be NULL, so it really should be a pointer, not
-    // a reference.  Oh well...
-    if (!&parent) return;
-    
     if (parent.fullkey() == root->fullkey())
     {
 	// the root itself is a special case, since it's not in a section,

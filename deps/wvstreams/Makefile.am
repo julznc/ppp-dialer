@@ -1,14 +1,23 @@
-AM_CPPFLAGS = -DUNSTABLE -Wall \
-	-I${srcdir}/include -I${srcdir}/argp
+AM_CPPFLAGS = -Wall -I${srcdir}/include -I${srcdir}/argp
 
 noinst_LIBRARIES = libwvstreams.a
 
 libwvstreams_a_SOURCES = \
+	streams/wvfdstream.cc \
+	streams/wvistreamlist.cc \
+	streams/wvlog.cc \
+	streams/wvstream.cc \
+	streams/wvfile.cc \
+	streams/wvstreamclone.cc  \
+	streams/wvconstream.cc \
+	streams/wvsyslog.cc \
+	streams/wvpipe.cc \
+	streams/wvmodem.cc \
+	streams/wvlockdev.cc \
 	utils/wvbuffer.cc \
 	utils/wvbufferstore.cc \
 	utils/wvcont.cc \
 	utils/wverror.cc \
-	streams/wvfdstream.cc \
 	utils/wvfork.cc \
 	utils/wvhash.cc \
 	utils/wvhashtable.cc \
@@ -24,10 +33,14 @@ libwvstreams_a_SOURCES = \
 	utils/strutils.cc \
 	utils/wvtask.cc \
 	utils/wvtimeutils.cc \
-	streams/wvistreamlist.cc \
 	utils/wvstreamsdebugger.cc \
-	streams/wvlog.cc \
-	streams/wvstream.cc \
+	utils/wvbackslash.cc \
+	utils/wvencoder.cc \
+	utils/wvtclstring.cc \
+	utils/wvstringcache.cc \
+	utils/wvcrashbase.cc \
+	utils/wvargs.cc \
+	utils/wvsubproc.cc \
 	uniconf/uniconf.cc \
 	uniconf/uniconfgen.cc \
 	uniconf/uniconfkey.cc \
@@ -35,23 +48,9 @@ libwvstreams_a_SOURCES = \
 	uniconf/unihashtree.cc \
 	uniconf/unimountgen.cc \
 	uniconf/unitempgen.cc \
-	utils/wvbackslash.cc \
-	utils/wvencoder.cc \
-	utils/wvtclstring.cc \
-	utils/wvstringcache.cc \
 	uniconf/uniinigen.cc \
 	uniconf/unigenhack.cc \
 	uniconf/unilistiter.cc \
-	streams/wvfile.cc \
-	streams/wvstreamclone.cc  \
-	streams/wvconstream.cc \
-	utils/wvcrashbase.cc \
-	xplc-cxx/getiface.cc \
-	utils/wvargs.cc \
-	utils/wvsubproc.cc \
 	uniconf/wvconfemu.cc \
-	streams/wvsyslog.cc \
-	streams/wvpipe.cc \
-	streams/wvmodem.cc \
-	streams/wvlockdev.cc
+	xplc-cxx/getiface.cc
 
