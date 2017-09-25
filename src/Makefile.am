@@ -16,10 +16,7 @@ wvdialconf_SOURCES = \
 	wvmodemscan.cc
 
 WVSTREAMLIBS = \
-	${top_builddir}/deps/wvstreams/libuniconf.a \
 	${top_builddir}/deps/wvstreams/libwvstreams.a \
-	${top_builddir}/deps/wvstreams/libwvutils.a \
-	${top_builddir}/deps/wvstreams/libwvbase.a \
 	${top_builddir}/deps/wvstreams/argp/libargp.a
 
 wvdial_LDADD = $(WVSTREAMLIBS)

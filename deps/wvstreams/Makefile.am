@@ -1,9 +1,9 @@
 AM_CPPFLAGS = -DUNSTABLE -Wall \
 	-I${srcdir}/include -I${srcdir}/argp
 
-noinst_LIBRARIES =  libwvbase.a libwvutils.a libuniconf.a libwvstreams.a
+noinst_LIBRARIES = libwvstreams.a
 
-libwvbase_a_SOURCES = \
+libwvstreams_a_SOURCES = \
 	utils/wvbuffer.cc \
 	utils/wvbufferstore.cc \
 	utils/wvcont.cc \
@@ -46,16 +46,10 @@ libwvbase_a_SOURCES = \
 	streams/wvstreamclone.cc  \
 	streams/wvconstream.cc \
 	utils/wvcrashbase.cc \
-	xplc-cxx/getiface.cc
-
-libwvutils_a_SOURCES = \
+	xplc-cxx/getiface.cc \
 	utils/wvargs.cc \
-	utils/wvsubproc.cc
-
-libuniconf_a_SOURCES = \
-	uniconf/wvconfemu.cc
-
-libwvstreams_a_SOURCES = \
+	utils/wvsubproc.cc \
+	uniconf/wvconfemu.cc \
 	streams/wvsyslog.cc \
 	streams/wvpipe.cc \
 	streams/wvmodem.cc \
