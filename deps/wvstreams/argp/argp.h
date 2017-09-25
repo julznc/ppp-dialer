@@ -23,43 +23,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
-
-#define __need_error_t
 #include <errno.h>
-
-#ifndef __THROW
-# define __THROW
-#endif
-
-#ifndef __const
-# define __const const
-#endif
-
-#ifndef __error_t_defined
-typedef int error_t;
-# define __error_t_defined
-#endif
-
-/* FIXME: What's the right way to check for __restrict? Sun's cc seems
-   not to have it. Perhaps it's easiest to just delete the use of
-   __restrict from the prototypes. */
-#ifndef __restrict
-# ifndef __GNUC___
-#  define __restrict
-# endif
-#endif
-
-/* NOTE: We can't use the autoconf tests, since this is supposed to be
-   an installed header file and argp's config.h is of course not
-   installed. */
-#ifndef PRINTF_STYLE
-# if __GNUC__ >= 2
-#  define PRINTF_STYLE(f, a) __attribute__ ((__format__ (__printf__, f, a)))
-# else
-#  define PRINTF_STYLE(f, a)
-# endif
-#endif
-
 
 #ifdef  __cplusplus
 extern "C" {
@@ -400,11 +364,11 @@ struct argp_state
 extern error_t argp_parse (__const struct argp *__restrict __argp,
 			   int /*argc*/, char **__restrict /*argv*/,
 			   unsigned __flags, int *__restrict __arg_index,
-			   void *__restrict __input) __THROW;
+               void *__restrict __input);
 extern error_t __argp_parse (__const struct argp *__restrict __argp,
 			     int /*argc*/, char **__restrict /*argv*/,
 			     unsigned __flags, int *__restrict __arg_index,
-			     void *__restrict __input) __THROW;
+                 void *__restrict __input);
 
 /* Global variables.  */
 
@@ -468,10 +432,10 @@ extern error_t argp_err_exit_status;
    ARGP_HELP_*.  */
 extern void argp_help (__const struct argp *__restrict __argp,
 		       FILE *__restrict __stream,
-		       unsigned __flags, char *__restrict __name) __THROW;
+               unsigned __flags, char *__restrict __name);
 extern void __argp_help (__const struct argp *__restrict __argp,
 			 FILE *__restrict __stream, unsigned __flags,
-			 char *__name) __THROW;
+             char *__name);
 
 /* The following routines are intended to be called from within an argp
    parsing routine (thus taking an argp_state structure as the first
@@ -485,24 +449,22 @@ extern void __argp_help (__const struct argp *__restrict __argp,
    from the set ARGP_HELP_*.  */
 extern void argp_state_help (__const struct argp_state *__restrict __state,
 			     FILE *__restrict __stream,
-			     unsigned int __flags) __THROW;
+                 unsigned int __flags);
 extern void __argp_state_help (__const struct argp_state *__restrict __state,
 			       FILE *__restrict __stream,
-			       unsigned int __flags) __THROW;
+                   unsigned int __flags);
 
 /* Possibly output the standard usage message for ARGP to stderr and exit.  */
-extern void argp_usage (__const struct argp_state *__state) __THROW;
-extern void __argp_usage (__const struct argp_state *__state) __THROW;
+extern void argp_usage (__const struct argp_state *__state);
+extern void __argp_usage (__const struct argp_state *__state);
 
 /* If appropriate, print the printf string FMT and following args, preceded
    by the program name and `:', to stderr, and followed by a `Try ... --help'
    message, then exit (1).  */
 extern void argp_error (__const struct argp_state *__restrict __state,
-			__const char *__restrict __fmt, ...) __THROW
-     PRINTF_STYLE(2,3);
+            __const char *__restrict __fmt, ...);
 extern void __argp_error (__const struct argp_state *__restrict __state,
-			  __const char *__restrict __fmt, ...) __THROW
-     PRINTF_STYLE(2,3);
+              __const char *__restrict __fmt, ...);
 
 /* Similar to the standard gnu error-reporting function error(), but will
    respect the ARGP_NO_EXIT and ARGP_NO_ERRS flags in STATE, and will print
@@ -514,21 +476,19 @@ extern void __argp_error (__const struct argp_state *__restrict __state,
    parsing but don't reflect a (syntactic) problem with the input.  */
 extern void argp_failure (__const struct argp_state *__restrict __state,
 			  int __status, int __errnum,
-			  __const char *__restrict __fmt, ...) __THROW
-     PRINTF_STYLE(4,5);
+              __const char *__restrict __fmt, ...);
 extern void __argp_failure (__const struct argp_state *__restrict __state,
 			    int __status, int __errnum,
-			    __const char *__restrict __fmt, ...) __THROW
-     PRINTF_STYLE(4,5);
+                __const char *__restrict __fmt, ...);
 
 /* Returns true if the option OPT is a valid short option.  */
-extern int _option_is_short (__const struct argp_option *__opt) __THROW;
-extern int __option_is_short (__const struct argp_option *__opt) __THROW;
+extern int _option_is_short (__const struct argp_option *__opt);
+extern int __option_is_short (__const struct argp_option *__opt);
 
 /* Returns true if the option OPT is in fact the last (unused) entry in an
    options array.  */
-extern int _option_is_end (__const struct argp_option *__opt) __THROW;
-extern int __option_is_end (__const struct argp_option *__opt) __THROW;
+extern int _option_is_end (__const struct argp_option *__opt);
+extern int __option_is_end (__const struct argp_option *__opt);
 
 /* Return the input field for ARGP in the parser corresponding to STATE; used
    by the help routines.  */
@@ -540,14 +500,14 @@ extern void *__argp_input (__const struct argp *__restrict __argp,
      __THROW;
 
 /* Used for extracting the program name from argv[0] */
-extern char *_argp_basename(char *name) __THROW;
-extern char *__argp_basename(char *name) __THROW;
+extern char *_argp_basename(char *name);
+extern char *__argp_basename(char *name);
 
 /* Getting the program name given an argp state */
 extern char *
-_argp_short_program_name(const struct argp_state *state) __THROW;
+_argp_short_program_name(const struct argp_state *state);
 extern char *
-__argp_short_program_name(const struct argp_state *state) __THROW;
+__argp_short_program_name(const struct argp_state *state);
 
 
 #ifdef __USE_EXTERN_INLINES

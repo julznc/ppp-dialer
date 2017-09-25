@@ -147,11 +147,9 @@ extern void __argp_fmtstream_free (argp_fmtstream_t __fs);
 extern void argp_fmtstream_free (argp_fmtstream_t __fs);
 
 extern ssize_t __argp_fmtstream_printf (argp_fmtstream_t __fs,
-				       __const char *__fmt, ...)
-     PRINTF_STYLE(2,3);
+                       __const char *__fmt, ...);
 extern ssize_t argp_fmtstream_printf (argp_fmtstream_t __fs,
-				      __const char *__fmt, ...)
-     PRINTF_STYLE(2,3);
+                      __const char *__fmt, ...);
 
 extern int __argp_fmtstream_putc (argp_fmtstream_t __fs, int __ch);
 extern int argp_fmtstream_putc (argp_fmtstream_t __fs, int __ch);
