@@ -78,16 +78,10 @@ char *alloca ();
 # endif
 /* We need to use a different name, as __strndup is likely a macro. */
 # define STRNDUP strndup
-# if HAVE_STRERROR
-#  define STRERROR strerror
-# else
-#  define STRERROR(x) (sys_errlist[x])
-# endif
 #else /* _LIBC */
 # define FLOCKFILE __flockfile
 # define FUNLOCKFILE __funlockfile
 # define STRNDUP __strndup
-# define STRERROR strerror
 #endif
 
 
@@ -1824,7 +1818,7 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
 	    {
 	      PUTC_UNLOCKED (':', stream);
 	      PUTC_UNLOCKED (' ', stream);
-	      fputs (STRERROR (errnum), stream);
+          fputs (strerror (errnum), stream);
 	    }
 
 	  PUTC_UNLOCKED ('\n', stream);
