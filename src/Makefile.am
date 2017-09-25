@@ -12,9 +12,9 @@ wvdial_SOURCES = \
 	wvpapchap.cc
 
 wvdial_LDADD = \
-	${top_builddir}/deps/wvstreams/utils/libwvutils.a \
 	${top_builddir}/deps/wvstreams/libwvbase.a \
-	${top_builddir}/deps/wvstreams/uniconf/libuniconf.a \
+	${top_builddir}/deps/wvstreams/utils/libwvutils.a \
 	${top_builddir}/deps/wvstreams/streams/libwvstreams.a \
+	${top_builddir}/deps/wvstreams/uniconf/libuniconf.a \
 	${top_builddir}/deps/wvstreams/argp/libargp.a
 	

@@ -90,21 +90,6 @@ char *alloca ();
 # define STRERROR strerror
 #endif
 
-#if !_LIBC
-# if !HAVE_STRNDUP
-char *strndup (const char *s, size_t size);
-# endif /* !HAVE_STRNDUP */
-
-# if !HAVE_MEMPCPY
-void *mempcpy (void *to, const void *from, size_t size);
-# endif /* !HAVE_MEMPCPY */
-
-# if !HAVE_STRCHRNUL
-char *strchrnul(const char *s, int c);
-# endif /* !HAVE_STRCHRNUL */
-
-#endif /* !_LIBC */
-
 
 /* User-selectable (using an environment variable) formatting parameters.
 

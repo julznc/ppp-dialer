@@ -30,8 +30,5 @@ libwvutils_a_SOURCES = \
 	wvencoder.cc \
 	wvtclstring.cc \
 	wvstringcache.cc \
-	wvsorter.cc \
-	wvhashtable.cc \
 	wvcrashbase.cc \
 	wvsubproc.cc
-

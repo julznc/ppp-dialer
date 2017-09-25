@@ -24,6 +24,20 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
+
+#ifndef __error_t_defined
+typedef int error_t;
+# define __error_t_defined
+#endif
+
+#ifndef UNUSED
+# ifdef __GNUC__
+#  define UNUSED __attribute__((unused))
+# else /* __GNUC__ */
+#  define UNUSED
+# endif /* __GNUC__ */
+#endif
+
 
 #ifdef  __cplusplus
 extern "C" {
