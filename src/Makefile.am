@@ -2,7 +2,7 @@
 AM_CPPFLAGS = -Wall \
 	-I${top_srcdir}/deps/wvstreams/include
 
-bin_PROGRAMS = wvdial
+bin_PROGRAMS = wvdial wvdialconf
 
 wvdial_SOURCES = \
 	wvdial.cc \
@@ -11,10 +11,17 @@ wvdial_SOURCES = \
 	wvdialmon.cc \
 	wvpapchap.cc
 
-wvdial_LDADD = \
+wvdialconf_SOURCES = \
+	wvdialconf.cc \
+	wvmodemscan.cc
+
+WVSTREAMLIBS = \
 	${top_builddir}/deps/wvstreams/libuniconf.a \
 	${top_builddir}/deps/wvstreams/libwvstreams.a \
 	${top_builddir}/deps/wvstreams/libwvutils.a \
 	${top_builddir}/deps/wvstreams/libwvbase.a \
 	${top_builddir}/deps/wvstreams/argp/libargp.a
-	
+
+wvdial_LDADD = $(WVSTREAMLIBS)
+
+wvdialconf_LDADD = $(WVSTREAMLIBS)
