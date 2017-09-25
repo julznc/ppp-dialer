@@ -1,5 +1,6 @@
 AM_CPPFLAGS = -Wall \
-	-I${srcdir}/../include
+	-I${srcdir}/../include \
+	-I${srcdir}/../argp
 
 noinst_LIBRARIES = libwvutils.a
 

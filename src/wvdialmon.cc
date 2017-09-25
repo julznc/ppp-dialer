@@ -10,7 +10,28 @@
 #include <string.h>
 #include <regex.h>
 #include <netdb.h>
+#ifdef __CYGWIN__
+struct rtentry  {
+    unsigned long int   rt_pad1;
+    struct sockaddr     rt_dst;         // Target address.
+    struct sockaddr     rt_gateway;     // Gateway addr (RTF_GATEWAY)
+    struct sockaddr     rt_genmask;     // Target network mask (IP)
+    unsigned short int  rt_flags;
+    short int           rt_pad2;
+    unsigned long int   rt_pad3;
+    unsigned char       rt_tos;
+    unsigned char       rt_class;
+    short int           rt_pad4;
+    short int           rt_metric;      // +1 for binary compatibility!
+    char *              rt_dev;         // Forcing the device at add.
+    unsigned long int   rt_mtu;         // Per route MTU/Window.
+    unsigned long int   rt_window;      // Window clamping.
+    unsigned short int  rt_irtt;        // Initial RTT.
+};
+#define RTF_UP          0x0001          /* Route usable.  */
+#else
 #include <net/route.h>
+#endif
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/stat.h>
