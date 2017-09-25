@@ -29,10 +29,10 @@
 #define HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the <argp.h> header file. */
-#define HAVE_ARGP_H 1
+/* #undef HAVE_ARGP_H */
 
 /* Define to 1 if you have the <argz.h> header file. */
-#define HAVE_ARGZ_H 1
+/* #undef  HAVE_ARGZ_H */
 
 /* Define to 1 if you have the <boost/function.hpp> header file. */
 /* #undef HAVE_BOOST_FUNCTION_HPP */

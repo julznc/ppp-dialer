@@ -734,7 +734,7 @@ error_t WvArgsData::parser(int key, char *arg, struct argp_state *state)
 	if (state->arg_num >= data->maximum_args)
 	{
 	    // Too many arguments
-	    argp_usage(state);
+        __argp_usage(state);
 	}
 	data->args_.append(arg);
 	break;
@@ -744,7 +744,7 @@ error_t WvArgsData::parser(int key, char *arg, struct argp_state *state)
 	if (state->arg_num < data->required_args)
 	{
 	    // Too few arguments
-	    argp_usage(state);
+        __argp_usage(state);
 	}
 	break;
 
@@ -755,7 +755,7 @@ error_t WvArgsData::parser(int key, char *arg, struct argp_state *state)
 	    WvString error = option->process(arg);
 	    if (!error.isnull())
 	    {
-		argp_failure(state, argp_err_exit_status, 0,
+        __argp_failure(state, argp_err_exit_status, 0,
 			     "%s", error.cstr());
 		return EINVAL;
 	    }
@@ -802,7 +802,7 @@ bool WvArgs::process(int argc, char **argv, WvStringList *remaining_args)
     struct argp argp = { data->argp(), &WvArgsData::parser, args_doc, prog_doc,
 			 0, 0, 0 };
 
-    bool error = argp_parse(&argp, argc, argv, data->flags, 0, data->self());
+    bool error = __argp_parse(&argp, argc, argv, data->flags, 0, data->self());
 
     if (remaining_args)
     {
@@ -843,14 +843,14 @@ void WvArgs::set_help_footer(WvStringParm footer)
 void WvArgs::print_usage(int argc, char **argv)
 {
     struct argp argp = { data->argp(), 0, 0, 0, 0, 0, 0 };
-    argp_help(&argp, stdout, ARGP_HELP_STD_USAGE, argv[0]);
+    __argp_help(&argp, stdout, ARGP_HELP_STD_USAGE, argv[0]);
 }
 
 
 void WvArgs::print_help(int argc, char **argv)
 {
     struct argp argp = { data->argp(), 0, 0, 0, 0, 0, 0 };
-    argp_help(&argp, stdout, ARGP_HELP_STD_HELP, argv[0]);
+    __argp_help(&argp, stdout, ARGP_HELP_STD_HELP, argv[0]);
 }
 
 void WvArgs::add_set_bool_option(char short_option, WvStringParm long_option,
