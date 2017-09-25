@@ -25,3 +25,13 @@ WVSTREAMLIBS = \
 wvdial_LDADD = $(WVSTREAMLIBS)
 
 wvdialconf_LDADD = $(WVSTREAMLIBS)
+
+ppppeersdir = /etc/ppp/peers
+
+ppppeers_DATA = ppp.provider ppp.provider-pipe
+
+install-data-hook:
+	cd $(ppppeersdir); mv ppp.provider wvdial; mv ppp.provider-pipe wvdial-pipe
+
+uninstall-hook:
+	cd $(ppppeersdir); rm -f wvdial*
