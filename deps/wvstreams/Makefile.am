@@ -46,21 +46,7 @@ libwvbase_a_SOURCES = \
 	streams/wvstreamclone.cc  \
 	streams/wvconstream.cc \
 	utils/wvcrashbase.cc \
-	xplc-cxx/factory.cc \
-	xplc-cxx/getiface.cc \
-	xplc-cxx/strtouuid.cc \
-	xplc-cxx/uuidtostr.cc \
-	xplc-cxx/xplc.cc \
-	xplc/category.cc \
-	xplc/catiter.cc \
-	xplc/catmgr.cc \
-	xplc/loader.cc \
-	xplc/moduleloader.cc \
-	xplc/modulemgr.cc \
-	xplc/monikers.cc \
-	xplc/new.cc \
-	xplc/servmgr.cc \
-	xplc/statichandler.cc
+	xplc-cxx/getiface.cc
 
 libwvutils_a_SOURCES = \
 	utils/wvargs.cc \
