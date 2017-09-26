@@ -23,12 +23,13 @@ wvdial_LDADD = $(WVSTREAMLIBS)
 
 wvdialconf_LDADD = $(WVSTREAMLIBS)
 
-ppppeersdir = /etc/ppp/peers
-
-ppppeers_DATA = ppp.provider ppp.provider-pipe
+PPPPEERSDIR = /etc/ppp/peers
 
 install-data-hook:
-	cd $(ppppeersdir); mv ppp.provider wvdial; mv ppp.provider-pipe wvdial-pipe
+	[ -d ${PPPPEERSDIR}      ] || install -d ${PPPPEERSDIR}
+	cp ${srcdir}/ppp.provider ${PPPPEERSDIR}/wvdial
+	cp ${srcdir}/ppp.provider-pipe ${PPPPEERSDIR}/wvdial-pipe
 
 uninstall-hook:
-	cd $(ppppeersdir); rm -f wvdial*
+	rm -f ${PPPPEERSDIR}/wvdial
+	rm -f ${PPPPEERSDIR}/wvdial-pipe
