@@ -23,7 +23,7 @@ wvdial_LDADD = $(WVSTREAMLIBS)
 
 wvdialconf_LDADD = $(WVSTREAMLIBS)
 
-PPPPEERSDIR = /etc/ppp/peers
+PPPPEERSDIR = ${sysconfdir}/ppp/peers
 
 install-data-hook:
 	[ -d ${PPPPEERSDIR}      ] || install -d ${PPPPEERSDIR}

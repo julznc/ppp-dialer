@@ -7,6 +7,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/LGPL-2.1;md5=1a6d268fd218675ffe
 
 inherit autotools
 
+# depends on ppp daemon
 RDEPENDS_${PN} = "ppp"
 
 # replaces old wvdial package
@@ -14,4 +15,9 @@ RPROVIDES_${PN} += "wvdial wvdialconf"
 
 SRC_URI = "git://github.com/julznc/ppp-dialer.git;branch=master"
 
+# use latest revision
 SRCREV = "${AUTOREV}"
+
+S = "${WORKDIR}/git"
+
+EXTRA_OECONF = "--sysconfdir=${D}${sysconfdir}"
