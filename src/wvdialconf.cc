@@ -6,12 +6,12 @@
  */
 
 #include "uniconfroot.h"
-#include "wvargs.h"
 #include "wvfile.h"
 #include "wvmodemscan.h"
 #include "wvstrutils.h"
 #include "version.h"
 #include <ctype.h>
+#include <getopt.h>
 
 
 void check_ppp_options()
@@ -45,27 +45,60 @@ void check_ppp_options()
     }
 }
 
+static void print_usage(const char *prog)
+{
+    const char *p = strrchr( prog, '/' );
+    if ( p ) {
+        prog = ++p;
+    }
+
+    printf("Usage: %s [-hv] [FILENAME]\n", prog);
+    printf("Create or update a WvDial configuration file\n\n"
+           "  -h --help       Give this help list\n"
+           "  -v --version    Print program version\n\n"
+           "You must specify the FILENAME of the "
+           "configuration file to generate.\n");
+}
+
+static void parse_opts(int argc, char *argv[])
+{
+    int c;
+    static const struct option lopts[] = {
+        {"help",    no_argument, 0, 'h'},
+        {"version", no_argument, 0, 'v'},
+    };
+    while (-1 != (c = getopt_long(argc, argv, "hv", lopts, NULL)))
+    {
+        switch (c)
+        {
+        case 'h':
+            print_usage(argv[0]);
+            exit(0);
+            break;
+        case 'v':
+            printf("WvDialConf " WVDIAL_VER_STRING "\n"
+                   "Copyright (c) 1997-2005 Net Integration "
+                   "Technologies, Inc.\n"
+                   "          (c) 2017 'yus\n");
+            exit(0);
+            break;
+        default:
+            print_usage(argv[0]);
+            exit(-1);
+            break;
+        }
+    }
+}
 
 int main(int argc, char **argv)
 {
-#if DEBUG
-    free(malloc(1));    // for electric fence
-#endif	
     WvString conffilename("/etc/wvdial.conf");
+    parse_opts(argc, argv);
 
-    WvArgs args;
-    args.set_version("WvDialConf " WVDIAL_VER_STRING "\n"
-		     "Copyright (c) 1997-2005 Net Integration Technologies, "
-		     "Inc.");
-    args.set_help_header("Create or update a WvDial configuration file");
-    args.set_help_footer("You must specify the FILENAME of the configuration "
-			 "file to generate.");
-    args.add_optional_arg("FILENAME", false);
-
-    WvStringList remaining_args;
-    args.process(argc, argv, &remaining_args);
-    if (!remaining_args.isempty())
-	conffilename = remaining_args.popstr();
+    if (optind < argc) {
+        //printf("FILENAME = %s", argv[optind]);
+        conffilename = argv[optind];
+    }
 
     wvcon->print("Editing `%s'.\n\n", conffilename);
 

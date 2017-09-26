@@ -15,13 +15,11 @@ wvdialconf_SOURCES = \
 	wvdialconf.cc \
 	wvmodemscan.cc
 
-WVSTREAMLIBS = \
+wvdial_LDADD = \
 	${top_builddir}/deps/wvstreams/libwvstreams.a \
 	${top_builddir}/deps/wvstreams/argp/libargp.a
 
-wvdial_LDADD = $(WVSTREAMLIBS)
-
-wvdialconf_LDADD = $(WVSTREAMLIBS)
+wvdialconf_LDADD = ${top_builddir}/deps/wvstreams/libwvstreams.a
 
 PPPPEERSDIR = ${sysconfdir}/ppp/peers
 
