@@ -233,6 +233,9 @@ int main(int argc, char **argv)
     
     if (dialer.dial() == false)
     {
+        if (NULL!=syslog) {
+            delete syslog;
+        }
         return 1;
     }
     
@@ -245,13 +248,10 @@ int main(int argc, char **argv)
     
     int retval;
     
-    if (want_to_die)
-    {
+    if (want_to_die) {
         // Probably dieing from a user signal
         retval = 2;
-    }
-    
-    if ((dialer.status() != WvDialer::Idle) || !dialer.isok()) {
+    } else if ((dialer.status() != WvDialer::Idle) || !dialer.isok()) {
         retval = 1;
     } else {
         retval = 0;

@@ -585,18 +585,18 @@ four:
     // Let's just assume the command is a single-digit number.  This should
     // avoid accidentally parsing phone numbers or IP addresses.
     lmarker = token_list;
-    if ( lmarker->type == TOK_NUMBER
-	 && lmarker->tok_str[0] && !lmarker->tok_str[1] )
+    if ( (NULL!=lmarker) && (lmarker->type == TOK_NUMBER) &&
+         (NULL!=lmarker->tok_str) && lmarker->tok_str[0] && !lmarker->tok_str[1] )
     {
-	for ( tok = token_list; tok != NULL; tok = tok->next )
-	    if (tok->type == TOK_WORD && strcmp( tok->tok_str, "ppp" ) == 0 )
-		break;
-	
-	if ( tok )
-	{
-	    set_prompt_response( lmarker->tok_str ); // Case Four worked!
-	    return;
-	}
+        for ( tok = token_list; tok != NULL; tok = tok->next )
+            if (tok->type == TOK_WORD && strcmp( tok->tok_str, "ppp" ) == 0 )
+                break;
+
+        if ( tok )
+        {
+            set_prompt_response( lmarker->tok_str ); // Case Four worked!
+            return;
+        }
     }
     
     

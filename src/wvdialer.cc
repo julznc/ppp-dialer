@@ -762,33 +762,33 @@ bool WvDialer::init_modem()
 	    }
 	    if( !! *this_str ) 
 	    {
-		modem->print( "%s\r", *this_str );
-		log( "Sending: %s\n", *this_str );
-		
-		received = wait_for_modem( init_responses, 5000, true );
-		switch( received ) 
-		{
-		case -1:
-		    modem->print( "ATQ0\r" );
-		    log( "Sending: ATQ0\n" );
-		    received = wait_for_modem( init_responses, 500, true );
-		    modem->print( "%s\r", *this_str );
-		    log( "Re-Sending: %s\n", *this_str );
-		    received = wait_for_modem( init_responses, 5000, true );
-		    switch( received ) 
-		    {
-			case -1:
-			    err( "Modem not responding.\n" );
-			    return( false );
-			case 1:
-			    err( "Bad init string.\n" );
-			    return( false );
-		    }
-		    break;
-		case 1:
-		    err( "Bad init string.\n" );
-		    goto end_outer;
-		}
+            modem->print( "%s\r", *this_str );
+            log( "Sending: %s\n", *this_str );
+
+            received = wait_for_modem( init_responses, 5000, true );
+            switch( received )
+            {
+            case -1:
+                modem->print( "ATQ0\r" );
+                log( "Sending: ATQ0\n" );
+                (void)wait_for_modem( init_responses, 500, true );
+                modem->print( "%s\r", *this_str );
+                log( "Re-Sending: %s\n", *this_str );
+                received = wait_for_modem( init_responses, 5000, true );
+                switch( received )
+                {
+                case -1:
+                    err( "Modem not responding.\n" );
+                    return( false );
+                case 1:
+                    err( "Bad init string.\n" );
+                    return( false );
+                }
+                break;
+            case 1:
+                err( "Bad init string.\n" );
+                goto end_outer;
+            }
 	    }
 	}
 
@@ -1173,9 +1173,9 @@ void WvDialer::start_ppp()
     WvString	speed( options.baud );
     WvString	idle_seconds( options.idle_seconds );
     
-    const char *dev_str = (const char *)options.modem;
-    if (!(strncmp(options.modem, "/dev/", 5)))
-	dev_str += 5;
+  //const char *dev_str = (const char *)options.modem;
+  //if (!(strncmp(options.modem, "/dev/", 5)))
+  //    dev_str += 5;
     
     
     // open a pipe to access the messages of pppd
