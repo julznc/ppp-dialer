@@ -87,7 +87,6 @@ class WvTaskMan
     static void do_task();
     static void call_func(WvTask *task);
 
-    static char *stacktop;
     static ucontext_t stackmaster_task;
     
     static WvTask *stack_target;
@@ -119,9 +118,6 @@ public:
     
     static WvTask *whoami()
         { return current_task; }
-
-    static const void *current_top_of_stack();
-    static size_t current_stacksize_limit();
 
 private:
     static WvString debugger_tasks_run_cb(WvStringParm, WvStringList &,

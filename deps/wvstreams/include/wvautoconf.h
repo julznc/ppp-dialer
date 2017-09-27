@@ -65,9 +65,6 @@
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #define HAVE_LIBCRYPTO 1
 
-/* Whether libc supports __libc_stack_end */
-/* #undef HAVE_LIBC_STACK_END */
-
 /* Define to 1 if you have the `pam' library (-lpam). */
 /* #undef HAVE_LIBPAM */
 
@@ -168,9 +165,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
-
-/* Define to 1 if you have the <valgrind/memcheck.h> header file. */
-/* #undef HAVE_VALGRIND_MEMCHECK_H */
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #define HAVE_ZLIB_H 1

@@ -37,17 +37,6 @@ char *alloca ();
 #include <unistd.h>
 #include <sys/resource.h>
 
-#ifdef HAVE_VALGRIND_MEMCHECK_H
-#include <valgrind/memcheck.h>
-// Compatibility for Valgrind 3.1 and previous
-#ifndef VALGRIND_MAKE_MEM_DEFINED
-#define VALGRIND_MAKE_MEM_DEFINED VALGRIND_MAKE_READABLE 
-#endif
-#else
-#define VALGRIND_MAKE_MEM_DEFINED(x, y)
-#define RUNNING_ON_VALGRIND 0
-#endif
-
 #define TASK_DEBUG 0
 #if TASK_DEBUG
 # define Dprintf(fmt, args...) fprintf(stderr, fmt, ##args)
@@ -63,27 +52,8 @@ WvTaskList WvTaskMan::all_tasks, WvTaskMan::free_tasks;
 ucontext_t WvTaskMan::stackmaster_task, WvTaskMan::get_stack_return,
     WvTaskMan::toplevel;
 WvTask *WvTaskMan::current_task, *WvTaskMan::stack_target;
-char *WvTaskMan::stacktop;
 
 static int context_return;
-
-
-static bool use_shared_stack()
-{
-    return RUNNING_ON_VALGRIND;
-}
-
-
-static void valgrind_fix(char *stacktop)
-{
-#ifdef HAVE_VALGRIND_MEMCHECK_H
-    char val;
-    //printf("valgrind fix: %p-%p\n", &val, stacktop);
-    assert(stacktop > &val);
-#endif
-    VALGRIND_MAKE_MEM_DEFINED(&val, stacktop - &val);
-}
-
 
 WvTask::WvTask(WvTaskMan &_man, size_t _stacksize) : man(_man)
 {
@@ -196,8 +166,6 @@ WvTaskMan::WvTaskMan()
     current_task = NULL;
     magic_number = -WVTASK_MAGIC;
     
-    stacktop = (char *)alloca(0);
-    
     context_return = 0;
     assert(getcontext(&get_stack_return) == 0);
     if (context_return == 0)
@@ -276,13 +244,8 @@ int WvTaskMan::run(WvTask &task, int val)
     }
     else
     {
-        // need to make state readable to see if we need to make more readable..
-        VALGRIND_MAKE_MEM_DEFINED(&state, sizeof(state));
-	// someone did yield() (if toplevel) or run() on our old task; done.
-	if (state != &toplevel)
-	    valgrind_fix(stacktop);
-	current_task = old_task;
-	return newval;
+        current_task = old_task;
+        return newval;
     }
 }
 
@@ -297,27 +260,8 @@ int WvTaskMan::yield(int val)
     
     assert(current_task->stack_magic);
     
-    // if this fails, this task overflowed its stack.  Make it bigger!
-    VALGRIND_MAKE_MEM_DEFINED(current_task->stack_magic,
-                           sizeof(current_task->stack_magic));
     assert(*current_task->stack_magic == WVTASK_MAGIC);
 
-#if TASK_DEBUG
-    if (use_shared_stack())
-    {
-        size_t stackleft;
-        char *stackbottom = (char *)(current_task->stack_magic + 1);
-        for (stackleft = 0; stackleft < current_task->stacksize; stackleft++)
-        {
-            if (stackbottom[stackleft] != 0x42)
-                break;
-        }
-        Dprintf("WvTaskMan: remaining stack after #%d (%s): %ld/%ld\n",
-                current_task->tid, current_task->name.cstr(), (long)stackleft,
-                (long)current_task->stacksize);
-    }
-#endif
-		
     context_return = 0;
     assert(getcontext(&current_task->mystate) == 0);
     int newval = context_return;
@@ -330,10 +274,9 @@ int WvTaskMan::yield(int val)
     }
     else
     {
-	// back via longjmp, because someone called run() again.  Let's go
-	// back to our running task...
-	valgrind_fix(stacktop);
-	return newval;
+        // back via longjmp, because someone called run() again.  Let's go
+        // back to our running task...
+        return newval;
     }
 }
 
@@ -347,8 +290,6 @@ void WvTaskMan::get_stack(WvTask &task, size_t size)
 	assert(magic_number == -WVTASK_MAGIC);
 	assert(task.magic_number == WVTASK_MAGIC);
 
-        if (!use_shared_stack())
-        {
 #if defined(__linux__) && (defined(__386__) || defined(__i386) || defined(__i386__))
             static char *next_stack_addr = (char *)0xB0000000;
             static const size_t stack_shift = 0x00100000;
@@ -366,7 +307,6 @@ void WvTaskMan::get_stack(WvTask &task, size_t size)
                 MAP_PRIVATE,
 #endif
                 -1, 0);
-        }
 	
 	// initial setup
 	stack_target = &task;
@@ -375,13 +315,11 @@ void WvTaskMan::get_stack(WvTask &task, size_t size)
     }
     else
     {
-	if (current_task)
-	    valgrind_fix(stacktop);
-	assert(magic_number == -WVTASK_MAGIC);
-	assert(task.magic_number == WVTASK_MAGIC);
-	
-	// back from stackmaster - the task is now set up.
-	return;
+        assert(magic_number == -WVTASK_MAGIC);
+        assert(task.magic_number == WVTASK_MAGIC);
+
+        // back from stackmaster - the task is now set up.
+        return;
     }
 }
 
@@ -423,13 +361,10 @@ void WvTaskMan::_stackmaster()
 	}
 	else
 	{
-	    valgrind_fix(stacktop);
 	    assert(magic_number == -WVTASK_MAGIC);
 	    
-	    total = (val+1) * (size_t)1024;
-	    
-            if (!use_shared_stack())
-                total = 4096; // enough to save the do_task stack frame
+        //total = (val+1) * (size_t)1024;
+        total = 4096; // enough to save the do_task stack frame
 
 	    // set up a stack frame for the new task.  This runs once
 	    // per get_stack.
@@ -492,7 +427,6 @@ void WvTaskMan::do_task()
     {
 	// someone did a run() on the task, which
 	// means they're ready to make it go.  Do it.
-	valgrind_fix(stacktop);
 	for (;;)
 	{
 	    assert(magic_number == -WVTASK_MAGIC);
@@ -501,30 +435,20 @@ void WvTaskMan::do_task()
 	    
 	    if (task->func && task->running)
 	    {
-                if (use_shared_stack())
-                {
-                    // this is the task's main function.  It can call yield()
-                    // to give up its timeslice if it wants.  Either way, it
-                    // only returns to *us* if the function actually finishes.
-                    task->func(task->userdata);
-                }
-                else
-                {
-                    assert(getcontext(&task->func_call) == 0);
-                    task->func_call.uc_stack.ss_size = task->stacksize;
-                    task->func_call.uc_stack.ss_sp = task->stack;
-                    task->func_call.uc_stack.ss_flags = 0;
-                    task->func_call.uc_link = &task->func_return;
-                    Dprintf("WvTaskMan: makecontext #%d (%s)\n",
-                            task->tid, (const char *)task->name);
-                    makecontext(&task->func_call,
-                            (void (*)(void))call_func, 1, task);
+                assert(getcontext(&task->func_call) == 0);
+                task->func_call.uc_stack.ss_size = task->stacksize;
+                task->func_call.uc_stack.ss_sp = task->stack;
+                task->func_call.uc_stack.ss_flags = 0;
+                task->func_call.uc_link = &task->func_return;
+                Dprintf("WvTaskMan: makecontext #%d (%s)\n",
+                        task->tid, (const char *)task->name);
+                makecontext(&task->func_call,
+                        (void (*)(void))call_func, 1, task);
 
-                    context_return = 0;
-                    assert(getcontext(&task->func_return) == 0);
-                    if (context_return == 0)
-                        setcontext(&task->func_call);
-                }
+                context_return = 0;
+                assert(getcontext(&task->func_return) == 0);
+                if (context_return == 0)
+                    setcontext(&task->func_call);
 		
 		// the task's function terminated.
 		task->name = "DEAD";
@@ -535,34 +459,3 @@ void WvTaskMan::do_task()
 	}
     }
 }
-
-
-const void *WvTaskMan::current_top_of_stack()
-{
-#ifdef HAVE_LIBC_STACK_END
-    extern const void *__libc_stack_end;
-    if (use_shared_stack() || current_task == NULL)
-        return __libc_stack_end;
-    else
-        return (const char *)current_task->stack + current_task->stacksize;
-#else
-    return 0;
-#endif
-}
-
-
-size_t WvTaskMan::current_stacksize_limit()
-{
-    if (use_shared_stack() || current_task == NULL)
-    {
-        struct rlimit rl;
-        if (getrlimit(RLIMIT_STACK, &rl) == 0)
-            return size_t(rl.rlim_cur);
-        else
-            return 0;
-    }
-    else
-        return size_t(current_task->stacksize);
-}
-
-    
