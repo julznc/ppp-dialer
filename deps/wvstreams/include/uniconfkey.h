@@ -241,8 +241,10 @@ public:
 
     ~UniConfKey()
     {
-        if (--store->ref_count == 0)
-            delete store;
+        if (--store->ref_count == 0) {
+            if (store != &EMPTY_store)
+                delete store;
+        }
     }
 
     /**
@@ -383,8 +385,10 @@ public:
      */
     UniConfKey &operator= (const UniConfKey &other)
     {
-        if (--store->ref_count == 0)
-            delete store;
+        if (--store->ref_count == 0) {
+            if (store != &EMPTY_store)
+                delete store;
+        }
         store = other.store;
         left = other.left;
         right = other.right;

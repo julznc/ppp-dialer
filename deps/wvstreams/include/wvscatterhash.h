@@ -106,7 +106,11 @@ protected:
 private:
     void rebuild();
     unsigned second_hash(unsigned hash) const
-        { return (hash % (numslots - 1)) + 1; }
+        {
+            if (numslots > 1)
+                return (hash % (numslots - 1)) + 1;
+            return (0+1); //?
+        }
     unsigned curhash(unsigned hash, unsigned hash2, unsigned attempt) const
         //{ return (hash + attempt * attempt) % numslots; }
         { return (hash + attempt*hash2) % numslots; }
@@ -182,8 +186,6 @@ public:
     public:
         Iter(WvScatterHash &_table) : IterBase(_table) { }
         Iter(const Iter &other) : IterBase(other) { }
-
-        unsigned char *getstatus() { return &xstatus[index-1]; }
 
         T *ptr() const
             { return (T *)(get()); }

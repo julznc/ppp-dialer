@@ -389,8 +389,10 @@ public:
          */
         void unlink(bool destroy = true)
         {
-	    if (prev) ((WvList *)list)->unlink_after(prev, destroy);
-	    link = prev->next;
+            if (prev) {
+                ((WvList *)list)->unlink_after(prev, destroy);
+                link = prev->next;
+            }
         }
 	
         /**
