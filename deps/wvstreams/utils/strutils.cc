@@ -311,7 +311,6 @@ WvString url_decode(WvStringParm str, bool no_space)
     in = trim_string(intmp.edit());
     out.setsize(strlen(in) + 1);
 
-    optr = out.edit();
     for (iptr = in, optr = out.edit(); *iptr; iptr++)
     {
         if (*iptr == '+' && !no_space)
@@ -870,6 +869,7 @@ WvString hostname()
             deletev name;
             return hostname;
         }
+        deletev name;
         assert(errno == EINVAL);
     }
 }
@@ -901,8 +901,9 @@ WvString wvgetcwd()
             deletev name;
             return s;
         }
-	if (errno == EACCES || errno == ENOENT)
-	    return "."; // can't deal with those errors
+        deletev name;
+        if (errno == EACCES || errno == ENOENT)
+            return "."; // can't deal with those errors
         assert(errno == ERANGE); // buffer too small
     }
 }

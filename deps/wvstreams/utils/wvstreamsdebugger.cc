@@ -106,8 +106,10 @@ WvString WvStreamsDebugger::run(WvStringParm cmd, WvStringList &args,
         return "No such command";
     Command *command = &it->second;
    
-    return command->run_cb(cmd, args, result_cb,
-			   get_command_data(cmd, command));
+    void *data = get_command_data(cmd, command);
+    if (NULL==data)
+        return "No command";
+    return command->run_cb(cmd, args, result_cb, data);
 }
 
 

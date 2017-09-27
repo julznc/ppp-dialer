@@ -248,7 +248,8 @@ void WvFastString::unlink()
 { 
     if (buf && ! --buf->links)
     {
-	free(buf);
+        if (buf != &nullbuf)
+            free(buf);
         buf = NULL;
     }
 }
