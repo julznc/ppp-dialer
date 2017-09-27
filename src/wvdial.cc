@@ -7,18 +7,17 @@
  * Created:	Sept 30 1997		D. Coombs
  */
 
-#include "wvargs.h"
 #include "wvdialer.h"
 #include "version.h"
 #include "wvlog.h"
 #include "wvlogrcv.h"
-#include "wvlogfile.h"
 #include "wvsyslog.h"
 #include "wvcrash.h"
 
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <getopt.h>
 
 volatile bool want_to_die = false;
 
@@ -62,123 +61,146 @@ static void signalhandler(int sig)
 }
 
 
-bool haveconfig = false;
-static bool config_cb(WvStringParm value, void *userdata)
+static bool haveconfig = false;
+static bool chat_mode = false;
+static bool write_syslog = true;
+
+static UniConfRoot  uniconf("temp:");
+static WvConf       cfg(uniconf);
+
+static void print_usage(const char *prog)
 {
-    WvConf *cfg = reinterpret_cast<WvConf*>(userdata);
-    if (!access(value, F_OK))
-    {
-	cfg->load_file(value);
-	haveconfig = true;
-	return true;
+    const char *p = strrchr( prog, '/' );
+    if ( p ) {
+        prog = ++p;
     }
-    fprintf(stderr, "Cannot read `%s'\n", value.cstr());
-    return false;
+
+    printf("Usage: %s [OPTION...] [SECTION]... [OPTION=value]...\n", prog);
+    printf("An intelligent PPP dialer.\n\n"
+           "  -c, --chat                 used when running wvdial from pppd\n"
+           "  -C, --config=configfile    use configfile instead of /etc/wvdial.conf\n"
+           "  -n, --no-syslog            don't send output to SYSLOG\n"
+           "  -h, --help                 Give this help list\n"
+           "  -v, --version              Print program version\n\n"
+           "Optional SECTION arguments refer to sections in configuration file (usually)\n"
+           "/etc/wvdial.conf, $HOME/.wvdialrc or the file specified by --config.\n"
+           "Specified sections are all read, with later ones overriding previous ones.\n"
+           "Any options not in the listed sections are taken from [Dialer Defaults].\n\n"
+           "Also, optional OPTION=value parameters allow you to override options within\n"
+           "the configuration files.");
 }
 
+static void parse_opts(int argc, char *argv[])
+{
+    int c;
+    static const struct option lopts[] = {
+        {"chat",      no_argument,       0, 'c'},
+        {"config",    required_argument, 0, 'C'},
+        {"no-syslog", no_argument,       0, 'n'},
+        {"help",      no_argument,       0, 'h'},
+        {"version",   no_argument,       0, 'v'},
+    };
+    while (-1 != (c = getopt_long(argc, argv, "cC:nhv", lopts, NULL)))
+    {
+        switch (c)
+        {
+        case 'c':
+            chat_mode = true;
+            break;
+        case 'C':
+            //printf("config=%s", optarg);
+            if (!access(optarg, F_OK)) {
+                cfg.load_file(optarg);
+                haveconfig = true;
+            } else {
+                fprintf(stderr, "Cannot read '%s'\n", optarg);
+                exit(-1);
+            }
+            break;
+        case 'n':
+            write_syslog = false;
+            break;
+        case 'h':
+            print_usage(argv[0]);
+            exit(0);
+            break;
+        case 'v':
+            printf("WvDial " WVDIAL_VER_STRING "\n"
+                   "Copyright (c) 1997-2005 Net Integration "
+                   "Technologies, Inc.\n"
+                   "          (c) 2017 'yus\n");
+            exit(0);
+            break;
+        default:
+            print_usage(argv[0]);
+            exit(-1);
+            break;
+        }
+    }
+}
 
 int main(int argc, char **argv)
 /********************************/
 {
-#if DEBUG
-    free( malloc( 1 ) ); // for electric fence
-#endif
-    
-    WvDialLogger 	rc;
-    WvSyslog		*syslog = NULL;
-    WvLogFile           *filelog = NULL;
-    UniConfRoot         uniconf("temp:");
-    WvConf              cfg(uniconf);
-    WvStringList	sections;
-    WvStringList	cmdlineopts;
-    WvLog		log( "WvDial", WvLog::Debug );
-    WvString		homedir = getenv("HOME");
-    
-    bool chat_mode = false;
-    bool write_syslog = true;
+    WvSyslog        *syslog = NULL;
+    WvStringList    sections;
+    WvStringList    cmdlineopts;
+    WvString        homedir = getenv("HOME");
     
     signal(SIGTERM, signalhandler);
     signal(SIGINT, signalhandler);
     signal(SIGHUP, signalhandler);
 
-    WvArgs args;
-    args.set_version("WvDial " WVDIAL_VER_STRING "\n"
-		     "Copyright (c) 1997-2005 Net Integration Technologies, "
-		     "Inc.");
-    args.set_help_header("An intelligent PPP dialer.");
-    args.set_help_footer("Optional SECTION arguments refer to sections in "
-			 "configuration file (usually)\n"
-			 "/etc/wvdial.conf, $HOME/.wvdialrc or the file "
-			 "specified by --config.\n"
-			 "Specified sections are all read, with later ones "
-			 "overriding previous ones.\n"
-			 "Any options not in the listed sections are taken "
-			 "from [Dialer Defaults].\n"
-			 "\n"
-			 "Also, optional OPTION=value parameters allow you "
-			 "to override options within\n"
-			 "the configuration files.\n");
-
-    args.add_option('C', "config",
-		    "use configfile instead of /etc/wvdial.conf",
-		    "configfile", WvArgs::ArgCallback(&config_cb), &cfg);
-    args.add_set_bool_option('c', "chat",
-			     "used when running wvdial from pppd", chat_mode);
-    args.add_reset_bool_option('n', "no-syslog",
-			       "don't send output to SYSLOG", chat_mode);
-    args.add_optional_arg("SECTION", true);
-    args.add_optional_arg("OPTION=value", true);
-
-    WvStringList remaining_args;
-    args.process(argc, argv, &remaining_args);
-
+    parse_opts(argc, argv);
+    while (optind < argc)
     {
-	WvStringList::Iter i(remaining_args);
-	for (i.rewind(); i.next(); )
-	{
-	    if (strchr(i(), '=' ))
-		cmdlineopts.append(new WvString(i()),true);
-	    else
-		sections.append(new WvString("Dialer %s", i()), true);
-	}
+        char *opt_arg = argv[optind];
+        printf("argv[%d]: %s\n", optind, opt_arg);
+        if (strchr(opt_arg, '=')) {
+            cmdlineopts.append(new WvString(opt_arg),true);
+        } else {
+            sections.append(new WvString("Dialer %s", opt_arg), true);
+        }
+        optind++;
     }
 
     if (sections.isempty())
-	sections.append(new WvString("Dialer Defaults"), true);
+    {
+        sections.append(new WvString("Dialer Defaults"), true);
+    }
 
     if( !haveconfig)
     {
-	// Load the system file first...
-	WvString stdconfig("/etc/wvdial.conf");
-		
-	if (!access(stdconfig, F_OK))
-	    cfg.load_file(stdconfig);
-	
-	// Then the user specific one...
-	if (homedir)
-        {
-	    WvString rcfile("%s/.wvdialrc", homedir);
-			
-	    if (!access(rcfile, F_OK))
-		cfg.load_file(rcfile);
-	}
+        // Load the system file first...
+        WvString stdconfig("/etc/wvdial.conf");
+
+        if (!access(stdconfig, F_OK)) {
+            cfg.load_file(stdconfig);
+        }
+
+        // Then the user specific one...
+        if (homedir) {
+            WvString rcfile("%s/.wvdialrc", homedir);
+
+            if (!access(rcfile, F_OK))
+            cfg.load_file(rcfile);
+        }
     }
     
     // Inject all of the command line options on into the cfg file in a new
     // section called Command-Line if there are command line options.
-    if (!cmdlineopts.isempty()) 
+    if (!cmdlineopts.isempty())
     {
         WvStringList::Iter i(cmdlineopts);
-        for (i.rewind();i.next();)
-        {
+        for (i.rewind();i.next();) {
             char *name = i().edit();
             char *value = strchr(name,'=');
-	    
+
             // Value should never be null since it can't get into the list
             // if it doesn't have an = in i()
             // 
             *value = 0;
-	    value++;
+            value++;
             name = trim_string(name);
             value = trim_string(value);
             cfg.set("Command-Line", name, value);
@@ -186,66 +208,59 @@ int main(int argc, char **argv)
         sections.prepend(new WvString("Command-Line"), true);
     }
     
-    if(!cfg.isok()) 
+    if(!cfg.isok())
     {
-	return 1;
+        return 1;
     }
     
-    if (chat_mode) 
-    { 
-	if (write_syslog) 
-	{ 
-	    WvString buf("wvdial[%s]", getpid()); 
-	    syslog = new WvSyslog( buf, false, WvLog::Debug2, 
-				   WvLog::Debug2 ); 
-	} 
-	else 
-	{ 
-	    // Direct logging to /dev/null as otherwise WvLog hasn't any 
-	    // receivers and thus will use WvLogConsole to log to stderr. 
-	    // That can disturb the communication with the modem on 
-	    // stdin/stdout. - Fixes a bug reported by SUSE on 04/05/04
-	    filelog = new WvLogFile( "/dev/null", WvLog::Debug2 ); 
-	} 
+    if (chat_mode)
+    {
+        if (write_syslog) {
+            WvString buf("wvdial[%s]", getpid());
+            syslog = new WvSyslog( buf, false, WvLog::Debug2,
+                                   WvLog::Debug2 );
+        }
     }
     
     WvDialer dialer(cfg, &sections, chat_mode);
     
     if (!chat_mode)
-	if (dialer.isok() && dialer.options.ask_password)
-	    dialer.ask_password();
+    {
+        if (dialer.isok() && dialer.options.ask_password)
+            dialer.ask_password();
+    }
     
     if (dialer.dial() == false)
-	return  1;
-    
-    while (!want_to_die && dialer.isok() 
-	   && dialer.status() != WvDialer::Idle) 
     {
-	dialer.select(100);
-	dialer.callback();
+        return 1;
+    }
+    
+    while (!want_to_die && dialer.isok()
+           && dialer.status() != WvDialer::Idle)
+    {
+        dialer.select(100);
+        dialer.callback();
     }
     
     int retval;
     
     if (want_to_die)
     {
-	// Probably dieing from a user signal
+        // Probably dieing from a user signal
         retval = 2;
     }
     
-    if ((dialer.status() != WvDialer::Idle) || !dialer.isok()) 
-    {
-	retval = 1;
-    } 
-    else 
-    {
-	retval = 0;
+    if ((dialer.status() != WvDialer::Idle) || !dialer.isok()) {
+        retval = 1;
+    } else {
+        retval = 0;
     }
     
     dialer.hangup();
     
-    WVRELEASE(filelog);
-    delete syslog;
+    if (NULL!=syslog) {
+        delete syslog;
+    }
 
     return(retval);
 }

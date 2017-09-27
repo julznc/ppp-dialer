@@ -15,9 +15,7 @@ wvdialconf_SOURCES = \
 	wvdialconf.cc \
 	wvmodemscan.cc
 
-wvdial_LDADD = \
-	${top_builddir}/deps/wvstreams/libwvstreams.a \
-	${top_builddir}/deps/wvstreams/argp/libargp.a
+wvdial_LDADD = ${top_builddir}/deps/wvstreams/libwvstreams.a
 
 wvdialconf_LDADD = ${top_builddir}/deps/wvstreams/libwvstreams.a
 
