@@ -13,7 +13,6 @@ AM_PROG_AR
 AC_CONFIG_FILES([
   Makefile
   deps/wvstreams/Makefile
-  deps/wvstreams/argp/Makefile
   src/Makefile
   src/version.h
 ])

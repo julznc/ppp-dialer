@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -Wall -I${srcdir}/include -I${srcdir}/argp
+AM_CPPFLAGS = -Wall -I${srcdir}/include
 
 noinst_LIBRARIES = libwvstreams.a
 
@@ -39,7 +39,6 @@ libwvstreams_a_SOURCES = \
 	utils/wvtclstring.cc \
 	utils/wvstringcache.cc \
 	utils/wvcrashbase.cc \
-	utils/wvargs.cc \
 	utils/wvsubproc.cc \
 	uniconf/uniconf.cc \
 	uniconf/uniconfgen.cc \
