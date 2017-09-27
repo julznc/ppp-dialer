@@ -429,7 +429,7 @@ void WvTaskMan::_stackmaster()
 	    total = (val+1) * (size_t)1024;
 	    
             if (!use_shared_stack())
-                total = 1024; // enough to save the do_task stack frame
+                total = 4096; // enough to save the do_task stack frame
 
 	    // set up a stack frame for the new task.  This runs once
 	    // per get_stack.

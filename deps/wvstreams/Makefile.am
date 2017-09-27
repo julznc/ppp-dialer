@@ -1,4 +1,7 @@
-AM_CPPFLAGS = -Wall -I${srcdir}/include
+AM_CPPFLAGS = -Wall \
+	-fPIC -fpermissive -fno-strict-aliasing \
+	-fno-tree-dce -fno-optimize-sibling-calls \
+	-I${srcdir}/include
 
 noinst_LIBRARIES = libwvstreams.a
 
