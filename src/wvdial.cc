@@ -64,9 +64,7 @@ static void signalhandler(int sig)
 static bool haveconfig = false;
 static bool chat_mode = false;
 static bool write_syslog = true;
-
-static UniConfRoot  uniconf("temp:");
-static WvConf       cfg(uniconf);
+static WvConf *p_cfg = NULL;
 
 static void print_usage(const char *prog)
 {
@@ -109,8 +107,8 @@ static void parse_opts(int argc, char *argv[])
             break;
         case 'C':
             //printf("config=%s", optarg);
-            if (!access(optarg, F_OK)) {
-                cfg.load_file(optarg);
+            if ((NULL!=p_cfg) && (!access(optarg, F_OK))) {
+                p_cfg->load_file(optarg);
                 haveconfig = true;
             } else {
                 fprintf(stderr, "Cannot read '%s'\n", optarg);
@@ -146,16 +144,19 @@ int main(int argc, char **argv)
     WvStringList    sections;
     WvStringList    cmdlineopts;
     WvString        homedir = getenv("HOME");
-    
+    UniConfRoot     uniconf("temp:");
+    WvConf          cfg(uniconf);
+
     signal(SIGTERM, signalhandler);
     signal(SIGINT, signalhandler);
     signal(SIGHUP, signalhandler);
 
+    p_cfg = &cfg;
     parse_opts(argc, argv);
     while (optind < argc)
     {
         char *opt_arg = argv[optind];
-        printf("argv[%d]: %s\n", optind, opt_arg);
+        //printf("argv[%d]: %s\n", optind, opt_arg);
         if (strchr(opt_arg, '=')) {
             cmdlineopts.append(new WvString(opt_arg),true);
         } else {
